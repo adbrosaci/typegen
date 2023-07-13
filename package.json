@@ -1,0 +1,17 @@
+{
+  "name": "@adbros/typegen",
+  "version": "1.0.0",
+  "description": "A simple generator of TypeScript types from OpenAPI docs",
+  "author": "Adbros",
+  "license": "MIT",
+  "scripts": {
+    "format": "prettier --write \"src/**/*\""
+  },
+  "bin": {
+    "typegen": "src/index.js"
+  },
+  "dependencies": {
+    "prettier": "^2.8.8",
+    "yaml": "^2.3.1"
+  }
+}

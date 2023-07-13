@@ -1,0 +1,47 @@
+const {
+	byEntryKey,
+	extractEndpoints,
+	formatTs,
+	generateParamsTypeName,
+	generateType,
+} = require('./common');
+
+function generateParamTypes(openapiDoc) {
+	const aliases = extractEndpoints(openapiDoc)
+		.filter(({ operation }) =>
+			operation.parameters.some(param => param.in === 'query')
+		)
+		.map(({ method, path, operation }) => [
+			generateParamsTypeName(method, path),
+			operation.parameters,
+		])
+		.sort(byEntryKey)
+		.map(([name, params]) => generateTypeAlias(name, params));
+
+	return aliases.length > 0 ? formatTs(aliases.join('\n\n')) : null;
+}
+
+function generateTypeAlias(typeName, params) {
+	const properties = params
+		.filter(param => param.in === 'query')
+		.map(({ name, ...options }) => [sanitizeParamName(name), options])
+		.sort(byEntryKey)
+		.map(([name, { schema, required }]) =>
+			generateProperty(name, schema, required)
+		)
+		.join(' ');
+
+	return `export type ${typeName} = { ${properties} }`;
+}
+
+function generateProperty(name, schema, required) {
+	const extendedSchema = required ? schema : { ...schema, nullable: true };
+	const type = generateType(extendedSchema);
+	return `${name}${required ? '' : '?'}: ${type};`;
+}
+
+function sanitizeParamName(name) {
+	return name.match(/^[a-z]+(?:[A-Z][a-z]*)*/)?.[0] ?? `'${name}'`;
+}
+
+module.exports = { generateParamTypes };
