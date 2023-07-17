@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 
-const { readFileSync, writeFileSync } = require('fs');
+const { readFile, writeFile } = require('fs/promises');
 const { relative, resolve } = require('path');
 const { parse } = require('yaml');
 
@@ -21,9 +21,10 @@ const HEADER_COMMENT =
 	'/* This file has been automatically generated */\n' +
 	'/* eslint-disable */';
 
-function main() {
+async function main() {
 	const config = loadConfig();
-	const openapiDoc = parse(readFileSync(resolve(config.inputDoc), 'utf-8'));
+	const openapiYaml = await readFile(resolve(config.inputDoc), 'utf-8');
+	const openapiDoc = parse(openapiYaml);
 	const modules = new Map();
 
 	const bodiesModule = generateBodyTypes(openapiDoc);
@@ -52,9 +53,11 @@ function main() {
 		modules.set(MODULE_NAME_BARREL, generateBarrel(...modules.keys()));
 	}
 
-	for (const [name, content] of modules) {
-		writeModule(name, content, config.outputDir);
-	}
+	await Promise.all(
+		Array.from(modules, ([name, content]) =>
+			writeModule(name, content, config.outputDir)
+		)
+	);
 }
 
 function generateBarrel(...moduleNames) {
@@ -70,11 +73,11 @@ function loadConfig() {
 	return require(`${relative(__dirname, process.cwd())}/${CONFIG_FILENAME}`);
 }
 
-function writeModule(name, content, outputPath) {
+async function writeModule(name, content, outputPath) {
 	const modulePath = resolve(outputPath, `${name}.ts`);
 	const prefixedContent = `${HEADER_COMMENT}\n\n${content}`;
 
-	writeFileSync(modulePath, prefixedContent);
+	await writeFile(modulePath, prefixedContent);
 	console.log(`Generated  ${modulePath}`);
 }
 
