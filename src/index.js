@@ -23,6 +23,10 @@ const HEADER_COMMENT =
 
 async function main() {
 	const config = loadConfig();
+	if (config.hooks?.before != null) {
+		await config.hooks.before();
+	}
+
 	const openapiYaml = await readFile(resolve(config.inputDoc), 'utf-8');
 	const openapiDoc = parse(openapiYaml);
 	const modules = new Map();
@@ -58,6 +62,10 @@ async function main() {
 			writeModule(name, content, config.outputDir)
 		)
 	);
+
+	if (config.hooks?.after != null) {
+		await config.hooks.after();
+	}
 }
 
 function generateBarrel(...moduleNames) {

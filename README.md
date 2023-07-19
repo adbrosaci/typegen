@@ -17,9 +17,12 @@ The `typegen.config.js` file should be present in the current working directory 
 
 The config object exported from  `typegen.config.js` should have the following properties:
 
-- `inputDoc` **(required)** -- A string containing the path to the input *OpenAPI 3.0.x* document.
+- `inputDoc` **(required)** -- A string containing the path to the input *OpenAPI 3.0.x* doc.
 - `outputDir` **(required)** -- A string containing the path to the output directory.
-- `endpoints` -- A child config object containing options related to the rendering of endpoints as arbitrary TypeScript constructs. If not given, `endpoints.ts` is not generated at all. If given, it **must contain**:
+- `hooks` -- An optional child config object containing convenience funtions to be called before/after the type generation itself. Both functions are optional. Both are called with zero arguments. Both may return a promise; the program's execution will be blocked until the promise's resolution. Both may throw or return an eventually rejected promise, in which case the program will be prematurely terminated with a nonzero exit code.
+  - `before` -- Called before the input doc is loaded. Useful e.g. for fetching the doc from an external source, generating the doc from other data, performing custom validation on the doc (and throwing/rejecting on failure to prevent the type generation itself), etc.
+  - `after` -- Called after the type generation is finished and the files written. Useful e.g. for custom post-processing of the generated files.
+- `endpoints` -- An optional child config object containing options related to the rendering of endpoints as arbitrary TypeScript constructs. If not given, `endpoints.ts` is not generated at all. If given, it **must contain**:
   - `renderEach` -- A function that maps available info about an endpoint to a string containing arbitrary TypeScript code. It will be called for each enpdoint (i.e. each method, path pair) with an info object containing:
     - `method` (`string`) -- the name of the HTTP method in lower case, e.g. `post`; 
     - `pathType` (`string`) -- a string literal type or template literal type describing the path including path parameters, e.g. ``` `/customer/${number}/invoices` ```;
