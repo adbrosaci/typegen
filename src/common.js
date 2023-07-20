@@ -70,6 +70,11 @@ function generateParamsTypeName(method, path) {
 	return `${camelMethod}${camelPath}Params`;
 }
 
+function generateProperty(key, schema, genType) {
+	const jsdoc = schema.deprecated ? `/** @deprecated */` : '';
+	return `${jsdoc}'${key}': ${genType(schema)};`;
+}
+
 function generateType(schema, namespace = null) {
 	const genChildType = subSchema => generateType(subSchema, namespace);
 
@@ -112,9 +117,8 @@ function generateType(schema, namespace = null) {
 
 			const properties = Object.entries(schema.properties ?? {})
 				.sort(byEntryKey)
-				.map(
-					([propName, subSchema]) =>
-						`'${propName}': ${genChildType(subSchema)};`
+				.map(([propKey, propSchema]) =>
+					generateProperty(propKey, propSchema, genChildType)
 				)
 				.join(' ');
 
