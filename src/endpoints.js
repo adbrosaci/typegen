@@ -3,6 +3,7 @@ const {
 	MODULE_NAME_SCHEMAS,
 	extractEndpoints,
 	formatTs,
+	generateImport,
 	generateParamsTypeName,
 	generateType,
 } = require('./common');
@@ -102,10 +103,6 @@ function generateParamsType(method, path, queryParams) {
 function generateBodyType(body) {
 	const schema = body?.content?.['application/json']?.schema;
 	return schema != null ? generateType(schema, NAMESPACE_SCHEMAS) : 'unknown';
-}
-
-function generateImport(namespace, moduleName) {
-	return `import * as ${namespace} from './${moduleName}';`;
 }
 
 module.exports = { generateEndpoints };

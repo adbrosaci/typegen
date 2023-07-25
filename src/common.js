@@ -60,6 +60,10 @@ function formatTs(tsCode, { breakLines = true } = {}) {
 	});
 }
 
+function generateImport(namespace, moduleName) {
+	return `import * as ${namespace} from './${moduleName}';`;
+}
+
 function generateParamsTypeName(method, path) {
 	const camelMethod = capitalize(method);
 	const camelPath = path
@@ -143,6 +147,7 @@ module.exports = {
 	capitalize,
 	extractEndpoints,
 	formatTs,
-	generateType,
+	generateImport,
 	generateParamsTypeName,
+	generateType,
 };

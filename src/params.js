@@ -1,12 +1,16 @@
 const {
+	MODULE_NAME_SCHEMAS,
 	byEntryKey,
 	extractEndpoints,
 	formatTs,
+	generateImport,
 	generateParamsTypeName,
 	generateType,
 } = require('./common');
 
-function generateParamTypes(openapiDoc) {
+const NAMESPACE_SCHEMAS = 's';
+
+function generateParamTypes({ openapiDoc, schemasGenerated }) {
 	const aliases = extractEndpoints(openapiDoc)
 		.filter(({ operation }) =>
 			operation.parameters.some(param => param.in === 'query')
@@ -18,7 +22,18 @@ function generateParamTypes(openapiDoc) {
 		.sort(byEntryKey)
 		.map(([name, params]) => generateTypeAlias(name, params));
 
-	return aliases.length > 0 ? formatTs(aliases.join('\n\n')) : null;
+	if (aliases.length === 0) {
+		return null;
+	}
+
+	const output = [
+		...(schemasGenerated
+			? [generateImport(NAMESPACE_SCHEMAS, MODULE_NAME_SCHEMAS)]
+			: []),
+		...aliases,
+	].join('\n\n');
+
+	return formatTs(output);
 }
 
 function generateTypeAlias(typeName, params) {
@@ -36,7 +51,7 @@ function generateTypeAlias(typeName, params) {
 
 function generateProperty(name, schema, required) {
 	const extendedSchema = required ? schema : { ...schema, nullable: true };
-	const type = generateType(extendedSchema);
+	const type = generateType(extendedSchema, NAMESPACE_SCHEMAS);
 	return `${name}${required ? '' : '?'}: ${type};`;
 }
 

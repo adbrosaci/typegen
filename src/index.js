@@ -36,7 +36,10 @@ async function main() {
 		modules.set(MODULE_NAME_SCHEMAS, schemasModule);
 	}
 
-	const paramsModule = generateParamTypes(openapiDoc);
+	const paramsModule = generateParamTypes({
+		schemasGenerated: modules.has(MODULE_NAME_SCHEMAS),
+		openapiDoc,
+	});
 	if (paramsModule != null) {
 		modules.set(MODULE_NAME_PARAMS, paramsModule);
 	}
