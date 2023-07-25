@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 
-const { readFile, writeFile } = require('fs/promises');
+const { readdir, readFile, unlink, writeFile } = require('fs/promises');
 const { relative, resolve } = require('path');
 const { parse } = require('yaml');
 
@@ -57,6 +57,7 @@ async function main() {
 		modules.set(MODULE_NAME_BARREL, generateBarrel(...modules.keys()));
 	}
 
+	await clearOutputDir(config.outputDir);
 	await Promise.all(
 		Array.from(modules, ([name, content]) =>
 			writeModule(name, content, config.outputDir)
@@ -79,6 +80,18 @@ function generateBarrel(...moduleNames) {
 
 function loadConfig() {
 	return require(`${relative(__dirname, process.cwd())}/${CONFIG_FILENAME}`);
+}
+
+async function clearOutputDir(outputPath) {
+	const filenames = await readdir(outputPath);
+
+	await Promise.all(
+		filenames.map(async filename => {
+			const path = resolve(outputPath, filename);
+			await unlink(path);
+			console.log(`Removed ${path}`);
+		})
+	);
 }
 
 async function writeModule(name, content, outputPath) {
