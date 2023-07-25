@@ -1,9 +1,9 @@
 const { format } = require('prettier');
 
 const MODULE_NAME_BARREL = 'index';
-const MODULE_NAME_BODIES = 'bodies';
 const MODULE_NAME_ENDPOINTS = 'endpoints';
 const MODULE_NAME_PARAMS = 'params';
+const MODULE_NAME_SCHEMAS = 'schemas';
 
 const PRINT_WIDTH_DEFAULT = 80;
 const PRINT_WIDTH_LARGE = 1000;
@@ -136,9 +136,9 @@ function generateType(schema, namespace = null) {
 
 module.exports = {
 	MODULE_NAME_BARREL,
-	MODULE_NAME_BODIES,
 	MODULE_NAME_ENDPOINTS,
 	MODULE_NAME_PARAMS,
+	MODULE_NAME_SCHEMAS,
 	byEntryKey,
 	capitalize,
 	extractEndpoints,

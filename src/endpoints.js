@@ -1,20 +1,20 @@
 const {
-	MODULE_NAME_BODIES,
 	MODULE_NAME_PARAMS,
+	MODULE_NAME_SCHEMAS,
 	extractEndpoints,
 	formatTs,
 	generateParamsTypeName,
 	generateType,
 } = require('./common');
 
-const NAMESPACE_BODIES = 'b';
 const NAMESPACE_PARAMS = 'p';
+const NAMESPACE_SCHEMAS = 's';
 
 const PATH_PARAM_REGEX = /^\{(.+)\}$/;
 
 function generateEndpoints({
 	openapiDoc,
-	bodiesGenerated,
+	schemasGenerated,
 	paramsGenerated,
 	renderEach,
 	renderModule,
@@ -30,8 +30,8 @@ function generateEndpoints({
 	}
 
 	const imports = [
-		...(bodiesGenerated
-			? [generateImport(NAMESPACE_BODIES, MODULE_NAME_BODIES)]
+		...(schemasGenerated
+			? [generateImport(NAMESPACE_SCHEMAS, MODULE_NAME_SCHEMAS)]
 			: []),
 		...(paramsGenerated
 			? [generateImport(NAMESPACE_PARAMS, MODULE_NAME_PARAMS)]
@@ -101,7 +101,7 @@ function generateParamsType(method, path, queryParams) {
 
 function generateBodyType(body) {
 	const schema = body?.content?.['application/json']?.schema;
-	return schema != null ? generateType(schema, NAMESPACE_BODIES) : 'unknown';
+	return schema != null ? generateType(schema, NAMESPACE_SCHEMAS) : 'unknown';
 }
 
 function generateImport(namespace, moduleName) {

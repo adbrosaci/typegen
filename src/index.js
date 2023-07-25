@@ -4,15 +4,15 @@ const { readFile, writeFile } = require('fs/promises');
 const { relative, resolve } = require('path');
 const { parse } = require('yaml');
 
-const { generateBodyTypes } = require('./bodies');
 const { generateEndpoints } = require('./endpoints');
 const { generateParamTypes } = require('./params');
+const { generateSchemaTypes } = require('./schemas');
 
 const {
 	MODULE_NAME_BARREL,
-	MODULE_NAME_BODIES,
 	MODULE_NAME_ENDPOINTS,
 	MODULE_NAME_PARAMS,
+	MODULE_NAME_SCHEMAS,
 } = require('./common');
 
 const CONFIG_FILENAME = 'typegen.config.js';
@@ -31,9 +31,9 @@ async function main() {
 	const openapiDoc = parse(openapiYaml);
 	const modules = new Map();
 
-	const bodiesModule = generateBodyTypes(openapiDoc);
-	if (bodiesModule != null) {
-		modules.set(MODULE_NAME_BODIES, bodiesModule);
+	const schemasModule = generateSchemaTypes(openapiDoc);
+	if (schemasModule != null) {
+		modules.set(MODULE_NAME_SCHEMAS, schemasModule);
 	}
 
 	const paramsModule = generateParamTypes(openapiDoc);
@@ -44,7 +44,7 @@ async function main() {
 	if (config.endpoints != null) {
 		const endpointsModule = generateEndpoints({
 			...config.endpoints,
-			bodiesGenerated: modules.has(MODULE_NAME_BODIES),
+			schemasGenerated: modules.has(MODULE_NAME_SCHEMAS),
 			paramsGenerated: modules.has(MODULE_NAME_PARAMS),
 			openapiDoc,
 		});
