@@ -6,6 +6,7 @@ const { parse } = require('yaml');
 
 const { generateEndpoints } = require('./endpoints');
 const { generateParamTypes } = require('./params');
+const { preprocessOpenapiDoc } = require('./preprocess');
 const { generateSchemaTypes } = require('./schemas');
 
 const {
@@ -28,7 +29,7 @@ async function main() {
 	}
 
 	const openapiYaml = await readFile(resolve(config.inputDoc), 'utf-8');
-	const openapiDoc = parse(openapiYaml);
+	const openapiDoc = preprocessOpenapiDoc(parse(openapiYaml));
 	const modules = new Map();
 
 	const schemasModule = generateSchemaTypes(openapiDoc);

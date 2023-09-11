@@ -28,36 +28,17 @@ function capitalize(string) {
 }
 
 function extractEndpoints(openapiDoc) {
-	const derefPathItem = item =>
-		'$ref' in item
-			? openapiDoc.paths[
-					item.$ref.split('/').at(-1).replaceAll('~1', '/')
-			  ]
-			: item;
+	return Object.entries(openapiDoc.paths ?? {}).flatMap(([path, pathItem]) =>
+		HTTP_METHODS.map(method => [method, pathItem[method]])
+			.filter(([, operation]) => operation != null)
+			.map(([method, operation]) => ({ method, path, operation }))
+	);
+}
 
-	return Object.entries(openapiDoc.paths ?? {})
-		.map(([path, pathItem]) => [path, derefPathItem(pathItem)])
-		.flatMap(([path, pathItem]) =>
-			HTTP_METHODS.map(method => [method, pathItem[method]])
-				.filter(item => item[1] != null)
-				.map(([method, { parameters = [], ...operation }]) => ({
-					method,
-					path,
-					operation: {
-						...operation,
-						parameters: [
-							...(pathItem.parameters ?? []),
-							...parameters,
-						].map(param =>
-							'$ref' in param
-								? openapiDoc.components.parameters[
-										param.$ref.split('/').at(-1)
-								  ]
-								: param
-						),
-					},
-				}))
-		);
+function filterRecord(record, predicate) {
+	return Object.fromEntries(
+		Object.entries(record).filter(([key, value]) => predicate(value, key))
+	);
 }
 
 function formatTs(tsCode, { breakLines = true } = {}) {
@@ -147,7 +128,14 @@ function generateType(schema, namespace = null) {
 	}
 }
 
+function mapRecord(record, mapper) {
+	return Object.fromEntries(
+		Object.entries(record).map(([key, value]) => [key, mapper(value, key)])
+	);
+}
+
 module.exports = {
+	HTTP_METHODS,
 	MODULE_NAME_BARREL,
 	MODULE_NAME_ENDPOINTS,
 	MODULE_NAME_PARAMS,
@@ -155,8 +143,10 @@ module.exports = {
 	byEntryKey,
 	capitalize,
 	extractEndpoints,
+	filterRecord,
 	formatTs,
 	generateImport,
 	generateParamsTypeName,
 	generateType,
+	mapRecord,
 };

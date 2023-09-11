@@ -13,7 +13,7 @@ const NAMESPACE_SCHEMAS = 's';
 function generateParamTypes({ openapiDoc, schemasGenerated }) {
 	const aliases = extractEndpoints(openapiDoc)
 		.filter(({ operation }) =>
-			operation.parameters.some(param => param.in === 'query')
+			operation.parameters?.some(param => param.in === 'query')
 		)
 		.map(({ method, path, operation }) => [
 			generateParamsTypeName(method, path),
