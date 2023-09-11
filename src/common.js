@@ -28,27 +28,36 @@ function capitalize(string) {
 }
 
 function extractEndpoints(openapiDoc) {
-	return Object.entries(openapiDoc.paths ?? {}).flatMap(([path, pathItem]) =>
-		HTTP_METHODS.map(method => [method, pathItem[method]])
-			.filter(item => item[1] != null)
-			.map(([method, { parameters = [], ...operation }]) => ({
-				method,
-				path,
-				operation: {
-					...operation,
-					parameters: [
-						...(pathItem.parameters ?? []),
-						...parameters,
-					].map(param =>
-						'$ref' in param
-							? openapiDoc.components.parameters[
-									param.$ref.split('/').at(-1)
-							  ]
-							: param
-					),
-				},
-			}))
-	);
+	const derefPathItem = item =>
+		'$ref' in item
+			? openapiDoc.paths[
+					item.$ref.split('/').at(-1).replaceAll('~1', '/')
+			  ]
+			: item;
+
+	return Object.entries(openapiDoc.paths ?? {})
+		.map(([path, pathItem]) => [path, derefPathItem(pathItem)])
+		.flatMap(([path, pathItem]) =>
+			HTTP_METHODS.map(method => [method, pathItem[method]])
+				.filter(item => item[1] != null)
+				.map(([method, { parameters = [], ...operation }]) => ({
+					method,
+					path,
+					operation: {
+						...operation,
+						parameters: [
+							...(pathItem.parameters ?? []),
+							...parameters,
+						].map(param =>
+							'$ref' in param
+								? openapiDoc.components.parameters[
+										param.$ref.split('/').at(-1)
+								  ]
+								: param
+						),
+					},
+				}))
+		);
 }
 
 function formatTs(tsCode, { breakLines = true } = {}) {
