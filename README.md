@@ -30,7 +30,8 @@ The config object exported from  `typegen.config.js` should have the following p
     - `responseType` (`string`) -- the type of the response body, e.g. `{ invoices: Invoice[]; totalCount: number }`,
     - `paramsType` (`string`) -- the type describing an object, where each property corresponds to a single query parameter accepted by the endpoint, e.g. `GetInvoicesParams` (defined in `params.ts` as e.g. `{ limit: number; offset: number }`);
     - `paramsExpected` (`boolean`) -- whether there is at least one query parameter accepted by the endpoint;
-    - `paramsRequired` (`boolean`) -- whether there is at least one query parameter required by the endpoint.
+    - `paramsRequired` (`boolean`) -- whether there is at least one query parameter required by the endpoint;
+    - `bodyExpected` (`boolean`) -- whether the endpoint expects a request body.
   - `renderModule` -- A function which maps the concatenated output of `renderEach` calls to a string containing the final TypeScript module. It takes an object with the sole property `content`.
 
 ### Example

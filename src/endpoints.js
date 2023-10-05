@@ -58,6 +58,7 @@ function generateEndpoint(method, path, operation, render) {
 		paramsType: generateParamsType(method, path, queryParams),
 		paramsExpected: queryParams.length > 0,
 		paramsRequired: queryParams.some(p => p.required),
+		bodyExpected: 'requestBody' in operation,
 		requestType:
 			'requestBody' in operation
 				? generateBodyType(operation.requestBody)
