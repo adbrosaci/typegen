@@ -27,11 +27,12 @@ The config object exported from  `typegen.config.js` should have the following p
     - `method` (`string`) -- the name of the HTTP method in lower case, e.g. `post`; 
     - `pathType` (`string`) -- a string literal type or template literal type describing the path including path parameters, e.g. ``` `/customer/${number}/invoices` ```;
     - `requestType` (`string`) -- the type of the request body, e.g. `Invoice`;
-    - `responseType` (`string`) -- the type of the response body, e.g. `{ invoices: Invoice[]; totalCount: number }`,
+    - `responseType` (`string`) -- the type of the response body for status code `200`, e.g. `{ invoices: Invoice[]; totalCount: number }`;
     - `paramsType` (`string`) -- the type describing an object, where each property corresponds to a single query parameter accepted by the endpoint, e.g. `GetInvoicesParams` (defined in `params.ts` as e.g. `{ limit: number; offset: number }`);
     - `paramsExpected` (`boolean`) -- whether there is at least one query parameter accepted by the endpoint;
     - `paramsRequired` (`boolean`) -- whether there is at least one query parameter required by the endpoint;
-    - `bodyExpected` (`boolean`) -- whether the endpoint expects a request body.
+    - `bodyExpected` (`boolean`) -- whether the endpoint expects a request body;
+    - `bodyReturned` (`boolean`) -- whether the endpoint returns a body within each response with status code `200`.
   - `renderModule` -- A function which maps the concatenated output of `renderEach` calls to a string containing the final TypeScript module. It takes an object with the sole property `content`.
 
 ### Example

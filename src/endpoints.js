@@ -57,17 +57,18 @@ function generateEndpoint(method, path, operation, render) {
 		method,
 		pathType: generatePathType(path, pathParams),
 		paramsType: generateParamsType(method, path, queryParams),
-		paramsExpected: queryParams.length > 0,
-		paramsRequired: queryParams.some(p => p.required),
-		bodyExpected: 'requestBody' in operation,
 		requestType:
-			'requestBody' in operation
+			operation.requestBody != null
 				? generateBodyType(operation.requestBody)
 				: 'never',
 		responseType:
-			'responses' in operation && '200' in operation.responses
+			operation.responses?.['200'] != null
 				? generateBodyType(operation.responses['200'])
 				: 'never',
+		paramsExpected: queryParams.length > 0,
+		paramsRequired: queryParams.some(({ required }) => required),
+		bodyExpected: operation.requestBody != null,
+		bodyReturned: operation.responses?.['200']?.content != null,
 	});
 }
 
