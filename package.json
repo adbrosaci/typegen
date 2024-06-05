@@ -4,7 +4,10 @@
   "description": "A simple generator of TypeScript types from OpenAPI docs",
   "author": "Adbros",
   "license": "MIT",
-  "repository": "github:adbrosaci/typegen",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/adbrosaci/typegen.git"
+  },
   "scripts": {
     "format": "prettier --write \"src/**/*\""
   },
