@@ -24,7 +24,8 @@ function generateEndpoints({
 		.sort((a, b) => a.path.localeCompare(b.path))
 		.map(({ operation, path, method }) =>
 			generateEndpoint(method, path, operation, renderEach)
-		);
+		)
+		.filter(endpoint => endpoint != null);
 
 	if (endpoints.length === 0) {
 		return null;

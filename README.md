@@ -23,7 +23,7 @@ The config object exported from  `typegen.config.js` should have the following p
   - `before` -- Called before the input doc is loaded. Useful e.g. for fetching the doc from an external source, generating the doc from other data, performing custom validation on the doc (and throwing/rejecting on failure to prevent the type generation itself), etc.
   - `after` -- Called after the type generation is finished and the files written. Useful e.g. for custom post-processing of the generated files.
 - `endpoints` -- An optional child config object containing options related to the rendering of endpoints as arbitrary TypeScript constructs. If not given, `endpoints.ts` is not generated at all. If given, it **must contain**:
-  - `renderEach` -- A function that maps available info about an endpoint to a string containing arbitrary TypeScript code. It will be called for each enpdoint (i.e. each method, path pair) with an info object containing:
+  - `renderEach` -- A function, called for each endpoint (i.e. each path-method pair), that maps available info about the given endpoint to a string containing arbitrary TypeScript code. If a [nullish](https://developer.mozilla.org/en-US/docs/Glossary/Nullish) value is returned from the function instead, the given endpoint is excluded from the output. The function is always called with a single argument -- an object containing the following properties:
     - `method` (`string`) -- the name of the HTTP method in lower case, e.g. `post`; 
     - `pathType` (`string`) -- a string literal type or template literal type describing the path including path parameters, e.g. ``` `/customer/${number}/invoices` ```;
     - `requestType` (`string`) -- the type of the request body, e.g. `Invoice`;
