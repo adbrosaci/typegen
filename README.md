@@ -24,6 +24,7 @@ The config object exported from  `typegen.config.js` should have the following p
   - `after` -- Called after the type generation is finished and the files written. Useful e.g. for custom post-processing of the generated files.
 - `endpoints` -- An optional child config object containing options related to the rendering of endpoints as arbitrary TypeScript constructs. If not given, `endpoints.ts` is not generated at all. If given, it **must contain**:
   - `renderEach` -- A function, called for each endpoint (i.e. each path-method pair), that maps available info about the given endpoint to a string containing arbitrary TypeScript code. If a [nullish](https://developer.mozilla.org/en-US/docs/Glossary/Nullish) value is returned from the function instead, the given endpoint is excluded from the output. The function is always called with a single argument -- an object containing the following properties:
+    - `path` (`string`) -- the path as specified in the input doc;
     - `method` (`string`) -- the name of the HTTP method in lower case, e.g. `post`; 
     - `pathType` (`string`) -- a string literal type or template literal type describing the path including path parameters, e.g. ``` `/customer/${number}/invoices` ```;
     - `requestType` (`string`) -- the type of the request body, e.g. `Invoice`;

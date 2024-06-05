@@ -55,6 +55,7 @@ function generateEndpoint(method, path, operation, render) {
 
 	return render({
 		method,
+		path,
 		pathType: generatePathType(path, pathParams),
 		paramsType: generateParamsType(method, path, queryParams),
 		requestType:
