@@ -124,7 +124,7 @@ function generateType(schema, namespace = null) {
 				: 'unknown[]';
 
 		default:
-			return 'never';
+			return 'unknown';
 	}
 }
 

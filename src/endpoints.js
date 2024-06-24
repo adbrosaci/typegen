@@ -61,11 +61,11 @@ function generateEndpoint(method, path, operation, render) {
 		requestType:
 			operation.requestBody != null
 				? generateBodyType(operation.requestBody)
-				: 'never',
+				: 'unknown',
 		responseType:
 			operation.responses?.['200'] != null
 				? generateBodyType(operation.responses['200'])
-				: 'never',
+				: 'unknown',
 		paramsExpected: queryParams.length > 0,
 		paramsRequired: queryParams.some(({ required }) => required),
 		bodyExpected: operation.requestBody != null,
