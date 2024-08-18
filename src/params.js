@@ -1,4 +1,5 @@
-const {
+import {
+	MODULE_HEADER,
 	MODULE_NAME_SCHEMAS,
 	byEntryKey,
 	extractEndpoints,
@@ -6,11 +7,9 @@ const {
 	generateImport,
 	generateParamsTypeName,
 	generateType,
-} = require('./common');
+} from './common.js';
 
-const NAMESPACE_SCHEMAS = 's';
-
-function generateParamTypes({ openapiDoc, schemasGenerated }) {
+export function generateParamTypes(openapiDoc, schemasGenerated) {
 	const aliases = extractEndpoints(openapiDoc)
 		.filter(({ operation }) =>
 			operation.parameters?.some(param => param.in === 'query')
@@ -33,8 +32,10 @@ function generateParamTypes({ openapiDoc, schemasGenerated }) {
 		...aliases,
 	].join('\n\n');
 
-	return formatTs(output);
+	return formatTs(`${MODULE_HEADER}\n${output}`);
 }
+
+const NAMESPACE_SCHEMAS = 's';
 
 function generateTypeAlias(typeName, params) {
 	const properties = params
@@ -58,5 +59,3 @@ function generateProperty(name, schema, required) {
 function sanitizeParamName(name) {
 	return name.match(/^[a-z]+(?:[A-Z][a-z]*)*/)?.[0] ?? `'${name}'`;
 }
-
-module.exports = { generateParamTypes };

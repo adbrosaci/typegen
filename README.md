@@ -5,17 +5,17 @@ A simple generator of TypeScript types from OpenAPI docs.
 ## Installation
 
 - Install the NPM package: `npm install --save-dev @adbros/typegen`.
-- Create a `typegen.config.js` file and export a valid config object from it. See *Configuration* (below) for details.
+- Create a `typegen.config.mjs` file and export a valid config object from it. See *Configuration* (below) for details.
 
 ## Usage
 
-Each time the OpenAPI doc changes, run `npx typegen` in the directory containing `typegen.config.js`.
+Each time the OpenAPI doc changes, run `npx typegen` in the directory containing `typegen.config.mjs`.
 
 ## Configuration
 
-The `typegen.config.js` file should be present in the current working directory when running the `typegen` utility. (Usually, it makes most sense for it to reside in the project's root directory -- next to `package.json`, `tsconfig.json`, etc.).
+The `typegen.config.mjs` file should be present in the current working directory when running the `typegen` utility. (Usually, it makes most sense for it to reside in the project's root directory -- next to `package.json`, `tsconfig.json`, etc.).
 
-The config object exported from  `typegen.config.js` should have the following properties:
+The config object exported from  `typegen.config.mjs` (using ESM default export) should have the following properties:
 
 - `inputDoc` **(required)** -- A string containing the path to the input *OpenAPI 3.0.x* doc.
 - `outputDir` **(required)** -- A string containing the path to the output directory.
@@ -45,7 +45,7 @@ The following config defines the generation of a valid subtype of an [Axios](htt
 - the return type -- corresponding to the matching endpoint's response type -- is automatically inferred for each valid call.
 
 ```js
-module.exports = {
+export default {
   inputDoc: 'path/to/openapi.yaml',
   outputDir: 'path/to/output/directory'
   endpoints: {
@@ -82,6 +82,6 @@ module.exports = {
           ): Promise<{ data: ${responseType} }>;`;
       }
     },
-  }
+  },
 };
 ```

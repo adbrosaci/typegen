@@ -1,14 +1,6 @@
-const { format } = require('prettier');
+import { format } from 'prettier';
 
-const MODULE_NAME_BARREL = 'index';
-const MODULE_NAME_ENDPOINTS = 'endpoints';
-const MODULE_NAME_PARAMS = 'params';
-const MODULE_NAME_SCHEMAS = 'schemas';
-
-const PRINT_WIDTH_DEFAULT = 80;
-const PRINT_WIDTH_LARGE = 1000;
-
-const HTTP_METHODS = [
+export const HTTP_METHODS = [
 	'delete',
 	'get',
 	'head',
@@ -19,15 +11,24 @@ const HTTP_METHODS = [
 	'trace',
 ];
 
-function byEntryKey([key1], [key2]) {
+export const MODULE_HEADER =
+	'/* This file has been automatically generated */\n' +
+	'/* eslint-disable */\n';
+
+export const MODULE_NAME_BARREL = 'index';
+export const MODULE_NAME_ENDPOINTS = 'endpoints';
+export const MODULE_NAME_PARAMS = 'params';
+export const MODULE_NAME_SCHEMAS = 'schemas';
+
+export function byEntryKey([key1], [key2]) {
 	return key1.localeCompare(key2);
 }
 
-function capitalize(string) {
+export function capitalize(string) {
 	return string.length > 0 ? string[0].toUpperCase() + string.slice(1) : '';
 }
 
-function extractEndpoints(openapiDoc) {
+export function extractEndpoints(openapiDoc) {
 	return Object.entries(openapiDoc.paths ?? {}).flatMap(([path, pathItem]) =>
 		HTTP_METHODS.map(method => [method, pathItem[method]])
 			.filter(([, operation]) => operation != null)
@@ -35,13 +36,13 @@ function extractEndpoints(openapiDoc) {
 	);
 }
 
-function filterRecord(record, predicate) {
+export function filterRecord(record, predicate) {
 	return Object.fromEntries(
 		Object.entries(record).filter(([key, value]) => predicate(value, key))
 	);
 }
 
-function formatTs(tsCode, { breakLines = true } = {}) {
+export function formatTs(tsCode, { breakLines = true } = {}) {
 	return format(tsCode, {
 		parser: 'babel-ts',
 		singleQuote: true,
@@ -50,11 +51,11 @@ function formatTs(tsCode, { breakLines = true } = {}) {
 	});
 }
 
-function generateImport(namespace, moduleName) {
+export function generateImport(namespace, moduleName) {
 	return `import * as ${namespace} from './${moduleName}';`;
 }
 
-function generateParamsTypeName(method, path) {
+export function generateParamsTypeName(method, path) {
 	const camelMethod = capitalize(method);
 	const camelPath = path
 		.split(/[^\w]+/)
@@ -64,12 +65,7 @@ function generateParamsTypeName(method, path) {
 	return `${camelMethod}${camelPath}Params`;
 }
 
-function generateProperty(key, schema, genType) {
-	const jsdoc = schema.deprecated ? `/** @deprecated */` : '';
-	return `${jsdoc}'${key}': ${genType(schema)};`;
-}
-
-function generateType(schema, namespace = null) {
+export function generateType(schema, namespace = null) {
 	const genChildType = subSchema => generateType(subSchema, namespace);
 
 	if (schema.nullable) {
@@ -128,25 +124,16 @@ function generateType(schema, namespace = null) {
 	}
 }
 
-function mapRecord(record, mapper) {
+export function mapRecord(record, mapper) {
 	return Object.fromEntries(
 		Object.entries(record).map(([key, value]) => [key, mapper(value, key)])
 	);
 }
 
-module.exports = {
-	HTTP_METHODS,
-	MODULE_NAME_BARREL,
-	MODULE_NAME_ENDPOINTS,
-	MODULE_NAME_PARAMS,
-	MODULE_NAME_SCHEMAS,
-	byEntryKey,
-	capitalize,
-	extractEndpoints,
-	filterRecord,
-	formatTs,
-	generateImport,
-	generateParamsTypeName,
-	generateType,
-	mapRecord,
-};
+const PRINT_WIDTH_DEFAULT = 80;
+const PRINT_WIDTH_LARGE = 1000;
+
+function generateProperty(key, schema, genType) {
+	const property = `'${key}': ${genType(schema)};`;
+	return schema.deprecated ? `/** @deprecated */ ${property}` : property;
+}

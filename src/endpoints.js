@@ -1,4 +1,5 @@
-const {
+import {
+	MODULE_HEADER,
 	MODULE_NAME_PARAMS,
 	MODULE_NAME_SCHEMAS,
 	extractEndpoints,
@@ -6,20 +7,15 @@ const {
 	generateImport,
 	generateParamsTypeName,
 	generateType,
-} = require('./common');
+} from './common.js';
 
-const NAMESPACE_PARAMS = 'p';
-const NAMESPACE_SCHEMAS = 's';
-
-const PATH_PARAM_REGEX = /^\{(.+)\}$/;
-
-function generateEndpoints({
+export function generateEndpoints(
 	openapiDoc,
 	schemasGenerated,
 	paramsGenerated,
 	renderEach,
-	renderModule,
-}) {
+	renderModule
+) {
 	const endpoints = extractEndpoints(openapiDoc)
 		.sort((a, b) => a.path.localeCompare(b.path))
 		.map(({ operation, path, method }) =>
@@ -41,12 +37,17 @@ function generateEndpoints({
 	];
 
 	const output = [
+		MODULE_HEADER,
 		...(imports.length > 0 ? [imports.join('\n')] : []),
 		renderModule({ content: endpoints.join('\n') }),
 	].join('\n\n');
 
 	return formatTs(output, { breakLines: false });
 }
+
+const NAMESPACE_PARAMS = 'p';
+const NAMESPACE_SCHEMAS = 's';
+const PATH_PARAM_REGEX = /^\{(.+)\}$/;
 
 function generateEndpoint(method, path, operation, render) {
 	const { parameters = [] } = operation;
@@ -108,5 +109,3 @@ function generateBodyType(body) {
 	const schema = body?.content?.['application/json']?.schema;
 	return schema != null ? generateType(schema, NAMESPACE_SCHEMAS) : 'unknown';
 }
-
-module.exports = { generateEndpoints };

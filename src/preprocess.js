@@ -1,6 +1,6 @@
-const { HTTP_METHODS, mapRecord, filterRecord } = require('./common');
+import { HTTP_METHODS, mapRecord, filterRecord } from './common.js';
 
-function preprocessOpenapiDoc(openapiDoc) {
+export function preprocessOpenapiDoc(openapiDoc) {
 	if (openapiDoc.paths == null) {
 		return openapiDoc;
 	}
@@ -83,5 +83,3 @@ function isRecordEntryOperation(_, key) {
 function parseNameFromRef(ref) {
 	return ref.split('/').at(-1).replaceAll('~1', '/');
 }
-
-module.exports = { preprocessOpenapiDoc };
