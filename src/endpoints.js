@@ -106,6 +106,13 @@ function generateParamsType(method, path, queryParams) {
 }
 
 function generateBodyType(body) {
+	const isBlobType =
+		body?.content?.['application/octet-stream']?.schema?.format ===
+		'binary';
 	const schema = body?.content?.['application/json']?.schema;
-	return schema != null ? generateType(schema, NAMESPACE_SCHEMAS) : 'unknown';
+	return isBlobType
+		? 'Blob'
+		: schema != null
+		? generateType(schema, NAMESPACE_SCHEMAS)
+		: 'unknown';
 }
